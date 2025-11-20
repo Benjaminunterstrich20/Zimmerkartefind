@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <title>ZimmerkarteFind</title>
   <script>
-    async function updatePosition() {
-      const pos = document.getElementById("posInput").value;
+    const rooms = ["Wohnzimmer", "Küche", "Bad", "Schlafzimmer"];
+
+    async function updatePosition(room) {
       const res = await fetch("/update", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({position: pos})
+        body: JSON.stringify({position: room})
       });
       const data = await res.json();
       if(data.status === "ok") {
@@ -24,13 +25,24 @@
     }
 
     setInterval(refreshPosition, 2000);
+
+    function createButtons() {
+      const container = document.getElementById("buttons");
+      rooms.forEach(room => {
+        const btn = document.createElement("button");
+        btn.innerText = room;
+        btn.onclick = () => updatePosition(room);
+        container.appendChild(btn);
+      });
+    }
+
+    window.onload = createButtons;
   </script>
 </head>
 <body>
   <h1>ZimmerkarteFind</h1>
   <p>Aktuelle Position: <span id="currentPos">{{ position }}</span></p>
 
-  <input type="text" id="posInput" placeholder="Neue Position eingeben">
-  <button onclick="updatePosition()">Aktualisieren</button>
+  <div id="buttons"></div>
 </body>
 </html>
