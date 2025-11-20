@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>ZimmerkarteFind</title>
+  <script>
+    async function updatePosition() {
+      const pos = document.getElementById("posInput").value;
+      const res = await fetch("/update", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({position: pos})
+      });
+      const data = await res.json();
+      if(data.status === "ok") {
+        document.getElementById("currentPos").innerText = data.position;
+      }
+    }
+
+    async function refreshPosition() {
+      const res = await fetch("/data");
+      const data = await res.json();
+      document.getElementById("currentPos").innerText = data.position;
+    }
+
+    setInterval(refreshPosition, 2000); // alle 2 Sekunden aktualisieren
+  </script>
+</head>
+<body>
+  <h1>ZimmerkarteFind</h1>
+  <p>Aktuelle Position: <span id="currentPos">{{ position }}</span></p>
+
+  <input type="text" id="posInput" placeholder="Neue Position eingeben">
+  <button onclick="updatePosition()">Aktualisieren</button>
+</body>
+</html>
